@@ -6,6 +6,7 @@ export interface Artical {
     publishedAt: string,
     url: string,
     urlToImg: string,
+    description: string,
 }
 
 export interface AppState {

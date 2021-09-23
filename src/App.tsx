@@ -28,11 +28,17 @@ class App extends React.Component<{}, AppState> {
         }
 
         this.state = {
-            articals: get_articals(1, 10),
+            articals: [],
             currentPage: 1,
             updateArticals: this.updateArticals,
             gotoPage: this.gotoPage,
         }
+
+    }
+
+    componentDidMount() {
+        get_articals(this.state.currentPage, 10)
+            .then(result => this.state.updateArticals(result));
     }
 
     render() {
