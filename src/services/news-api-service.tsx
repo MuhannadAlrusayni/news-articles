@@ -4,7 +4,7 @@ import { Artical } from "../context/app-context";
 // API KEY for newsapi: 7a1ef3d7a2b5423a8d742834c14ce906
 const API_KEY = "7a1ef3d7a2b5423a8d742834c14ce906";
 
-export async function get_articals(page: number, pageSize: number): Promise<Artical[]> {
+export async function get_articals(page: number, pageSize: number): Promise<[Artical[], number]> {
     const url = 'https://newsapi.org/v2/top-headlines?' +
         'country=us' +
         '&pageSize=' + pageSize +
@@ -14,7 +14,7 @@ export async function get_articals(page: number, pageSize: number): Promise<Arti
     return fetch_articals(url);
 }
 
-export async function search_for_articals(text: string, page: number, pageSize: number): Promise<Artical[]> {
+export async function search_for_articals(text: string, page: number, pageSize: number): Promise<[Artical[], number]> {
     const url = 'https://newsapi.org/v2/everything?' +
         '&q=' + text +
         '&pageSize=' + pageSize +
@@ -24,14 +24,14 @@ export async function search_for_articals(text: string, page: number, pageSize: 
     return fetch_articals(url);
 }
 
-async function fetch_articals(url: string): Promise<Artical[]> {
+async function fetch_articals(url: string): Promise<[Artical[], number]> {
     const response = await fetch(url);
     const json = await response.json();
-    if (response.ok) {
-        return json["articals"].map(toArtical);
+    if (response.ok && json["articles"] !== undefined) {
+        return [json["articles"].map(toArtical), Number.parseInt(json["totalResults"])];
     } else {
         console.log("failed to fetch data from newsapi: " + json["message"]);
-        return [];
+        return [[], 0];
     }
 }
 

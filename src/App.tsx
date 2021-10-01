@@ -2,7 +2,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { ListNewsApi } from './components/list-news-api';
-import { Artical, AppState, AppContext, GotoPageFn, UpdateArticalsFn, UpdateSearchFn } from './context/app-context';
+import { Artical, AppState, AppContext, GotoPageFn, UpdateArticalsFn, UpdateSearchFn, defaultStateValue } from './context/app-context';
 import { get_articals, search_for_articals } from './services/news-api-service';
 import { SearchBar } from './components/search-bar';
 import { Paginator } from './components/paginator';
@@ -19,46 +19,38 @@ class App extends React.Component<{}, AppState> {
         const updateContent = (text: string) => {
             if (text == "") {
                 get_articals(this.state.currentPage, this.state.itemPerPage)
-                    .then(this.updateArticals)
+                    .then(([articals, total]) => this.updateArticals(articals, total))
             } else {
                 search_for_articals(text, this.state.currentPage, this.state.itemPerPage)
-                    .then(this.updateArticals)
+                    .then(([articals, total]) => this.updateArticals(articals, total))
             }
         }
 
         this.gotoPage = (num: number) => {
-            // if num not in 1..10 exit
-            if (!(0 < num && num < 11)) {
+            // if num less than 1 exit
+            if (num < 1) {
                 return;
             }
 
-            this.setState(state => ({
-                currentPage: num
-            }))
-
-            updateContent(this.state.searchText);
+            this.setState({ currentPage: num }, () => { updateContent(this.state.searchText) });
         }
 
-        this.updateArticals = (articals: Artical[]) => {
-            this.setState(state => ({
-                articals: articals
-            }))
+        this.updateArticals = (articals: Artical[], totalArticals: number) => {
+            this.setState({ articals: articals, totalArticals: totalArticals })
         }
 
         this.updateSearchText = (text: string) => {
-            this.setState(state => ({
-                searchText: text,
-                currentPage: 1,
-            }))
-
-            updateContent(text);
+            const trimedText = text.trim();
+            if (this.state.searchText != trimedText) {
+                this.setState({
+                    searchText: trimedText,
+                    currentPage: 1,
+                }, () => { updateContent(trimedText) });
+            }
         }
 
         this.state = {
-            searchText: "",
-            articals: [],
-            currentPage: 1,
-            itemPerPage: 10,
+            ...defaultStateValue,
             updateArticals: this.updateArticals,
             gotoPage: this.gotoPage,
             updateSearchText: this.updateSearchText,
@@ -68,7 +60,7 @@ class App extends React.Component<{}, AppState> {
 
     componentDidMount() {
         get_articals(this.state.currentPage, this.state.itemPerPage)
-            .then(result => this.state.updateArticals(result));
+            .then(([articals, total]) => this.state.updateArticals(articals, total));
     }
 
     render() {

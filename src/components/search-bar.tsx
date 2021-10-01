@@ -16,9 +16,9 @@ export const SearchBar: React.FunctionComponent = (): ReactElement => {
     return (
         <AppContext.Consumer>
             {(appState) => (
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-3 flex-none">
                     <div className="text-gray-500" >Search</div>
-                    <input onChange={(event) => inputChnaged(event, appState)} type="text" value={input} />
+                    <input className="form-input w-full border-gray-300 border rounded p-1 px-4" onChange={(event) => inputChnaged(event, appState)} type="text" value={input} />
                 </div>
             )}
         </AppContext.Consumer>
