@@ -12,7 +12,7 @@ export const Paginator: React.FunctionComponent = (): ReactElement => {
         // only allow 10 pages maximum, since after that we need newsapi paid account
         const pages = range(1, numPgaes > 10 ? 10 : numPgaes);
         return pages.map((num) => (
-            <button key={num} className={num == appState.currentPage ? "rounded py-1 px-2 bg-blue-700 text-white" : "border rounded py-1 px-2"} onClick={(_e) => {
+            <button key={num} className={num == appState.currentPage ? "rounded py-1 px-2 bg-blue-700 text-white m-1" : "border rounded py-1 px-2 m-1"} onClick={(_e) => {
                 appState.gotoPage(num);
             }}> {num}</button >
         ))
@@ -21,7 +21,7 @@ export const Paginator: React.FunctionComponent = (): ReactElement => {
     return (
         <AppContext.Consumer>
             {(appState) => (
-                <div className="flex items-center space-x-3 flex-none">
+                <div className="flex flex-wrap items-center flex-none">
                     {btns(appState)}
                 </div>
             )}
